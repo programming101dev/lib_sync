@@ -2,8 +2,10 @@
 #include <p101_env/env.h>
 #include <p101_error/error.h>
 #include <p101_sync/sync.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 static int failures;
 
@@ -38,7 +40,7 @@ static int fail_next_call(const struct p101_env *env, const char *call_name, voi
 static void test_p101_pthread_cond_broadcast(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EBUSY, ETIMEDOUT};
+    static const int errors[] = {EIO};
 #elif defined(__APPLE__)
     static const int errors[] = {EINVAL};
 #elif defined(__FreeBSD__)
@@ -65,13 +67,13 @@ static void test_p101_pthread_cond_broadcast(struct p101_env *env, struct p101_e
 static void test_p101_pthread_cond_destroy(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EBUSY, ETIMEDOUT};
+    static const int errors[] = {EBUSY};
 #elif defined(__APPLE__)
     static const int errors[] = {EBUSY, EINVAL};
 #elif defined(__FreeBSD__)
     static const int errors[] = {EBUSY, EINVAL};
 #else
-    static const int errors[] = {EAGAIN, ENOMEM};
+    static const int errors[] = {EIO};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -92,7 +94,7 @@ static void test_p101_pthread_cond_destroy(struct p101_env *env, struct p101_err
 static void test_p101_pthread_cond_init(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EBUSY, ETIMEDOUT};
+    static const int errors[] = {EIO};
 #elif defined(__APPLE__)
     static const int errors[] = {EAGAIN, EINVAL, ENOMEM};
 #elif defined(__FreeBSD__)
@@ -119,7 +121,7 @@ static void test_p101_pthread_cond_init(struct p101_env *env, struct p101_error 
 static void test_p101_pthread_cond_signal(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EBUSY, ETIMEDOUT};
+    static const int errors[] = {EIO};
 #elif defined(__APPLE__)
     static const int errors[] = {EINVAL};
 #elif defined(__FreeBSD__)
@@ -146,7 +148,7 @@ static void test_p101_pthread_cond_signal(struct p101_env *env, struct p101_erro
 static void test_p101_pthread_cond_timedwait(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EBUSY, ETIMEDOUT};
+    static const int errors[] = {ETIMEDOUT};
 #elif defined(__APPLE__)
     static const int errors[] = {EINVAL, ETIMEDOUT};
 #elif defined(__FreeBSD__)
@@ -173,13 +175,13 @@ static void test_p101_pthread_cond_timedwait(struct p101_env *env, struct p101_e
 static void test_p101_pthread_cond_wait(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EBUSY, ETIMEDOUT};
+    static const int errors[] = {EIO};
 #elif defined(__APPLE__)
     static const int errors[] = {EINVAL};
 #elif defined(__FreeBSD__)
     static const int errors[] = {EINVAL, ENOTRECOVERABLE, EOWNERDEAD, EPERM};
 #else
-    static const int errors[] = {EAGAIN, EINVAL, ENOTRECOVERABLE, EOWNERDEAD, EPERM, ETIMEDOUT};
+    static const int errors[] = {EAGAIN, ENOTRECOVERABLE, EOWNERDEAD, EPERM};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -202,11 +204,11 @@ static void test_p101_pthread_condattr_destroy(struct p101_env *env, struct p101
 #ifdef __linux__
     static const int errors[] = {EIO};
 #elif defined(__APPLE__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {EINVAL};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {EINVAL};
 #else
-    static const int errors[] = {ENOMEM};
+    static const int errors[] = {EIO};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -227,13 +229,13 @@ static void test_p101_pthread_condattr_destroy(struct p101_env *env, struct p101
 static void test_p101_pthread_condattr_getpshared(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EINVAL};
+    static const int errors[] = {EIO};
 #elif defined(__APPLE__)
-    static const int errors[] = {EINVAL};
+    static const int errors[] = {EIO};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {EIO};
 #else
-    static const int errors[] = {EINVAL};
+    static const int errors[] = {EIO};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -256,9 +258,9 @@ static void test_p101_pthread_condattr_init(struct p101_env *env, struct p101_er
 #ifdef __linux__
     static const int errors[] = {EIO};
 #elif defined(__APPLE__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {ENOMEM};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {ENOMEM};
 #else
     static const int errors[] = {ENOMEM};
 #endif
@@ -285,7 +287,7 @@ static void test_p101_pthread_condattr_setpshared(struct p101_env *env, struct p
 #elif defined(__APPLE__)
     static const int errors[] = {EINVAL};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {EINVAL};
 #else
     static const int errors[] = {EINVAL};
 #endif
@@ -308,13 +310,13 @@ static void test_p101_pthread_condattr_setpshared(struct p101_env *env, struct p
 static void test_p101_pthread_mutex_destroy(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EBUSY, EDEADLK, EINVAL, EPERM};
+    static const int errors[] = {EBUSY};
 #elif defined(__APPLE__)
     static const int errors[] = {EBUSY, EINVAL};
 #elif defined(__FreeBSD__)
     static const int errors[] = {EBUSY, EINVAL};
 #else
-    static const int errors[] = {EAGAIN, EINVAL, ENOMEM, EPERM};
+    static const int errors[] = {EIO};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -335,13 +337,13 @@ static void test_p101_pthread_mutex_destroy(struct p101_env *env, struct p101_er
 static void test_p101_pthread_mutex_getprioceiling(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EAGAIN, EDEADLK, EINVAL, ENOTRECOVERABLE, EOWNERDEAD, EPERM};
+    static const int errors[] = {EINVAL, EPERM};
 #elif defined(__APPLE__)
-    static const int errors[] = {EAGAIN, EDEADLK, EINVAL, ENOTRECOVERABLE, EOWNERDEAD, EPERM};
+    static const int errors[] = {EINVAL, EPERM};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EAGAIN, EDEADLK, EINVAL, ENOTRECOVERABLE, EOWNERDEAD, EPERM};
+    static const int errors[] = {EINVAL, EPERM};
 #else
-    static const int errors[] = {EAGAIN, EDEADLK, EINVAL, ENOTRECOVERABLE, EOWNERDEAD, EPERM};
+    static const int errors[] = {EINVAL, EPERM};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -362,7 +364,7 @@ static void test_p101_pthread_mutex_getprioceiling(struct p101_env *env, struct 
 static void test_p101_pthread_mutex_init(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EBUSY, EDEADLK, EINVAL, EPERM};
+    static const int errors[] = {EIO};
 #elif defined(__APPLE__)
     static const int errors[] = {EINVAL, ENOMEM};
 #elif defined(__FreeBSD__)
@@ -389,13 +391,13 @@ static void test_p101_pthread_mutex_init(struct p101_env *env, struct p101_error
 static void test_p101_pthread_mutex_lock(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EBUSY, EDEADLK, EINVAL, EPERM};
+    static const int errors[] = {EDEADLK, EINVAL};
 #elif defined(__APPLE__)
     static const int errors[] = {EDEADLK, EINVAL};
 #elif defined(__FreeBSD__)
     static const int errors[] = {EDEADLK, EINVAL, ENOTRECOVERABLE, EOWNERDEAD};
 #else
-    static const int errors[] = {EAGAIN, EBUSY, EDEADLK, EINVAL, ENOTRECOVERABLE, EOWNERDEAD, EPERM};
+    static const int errors[] = {EAGAIN, EDEADLK, EINVAL, ENOTRECOVERABLE, EOWNERDEAD};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -443,13 +445,13 @@ static void test_p101_pthread_mutex_setprioceiling(struct p101_env *env, struct 
 static void test_p101_pthread_mutex_trylock(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EBUSY, EDEADLK, EINVAL, EPERM};
+    static const int errors[] = {EBUSY, EINVAL};
 #elif defined(__APPLE__)
     static const int errors[] = {EBUSY, EINVAL};
 #elif defined(__FreeBSD__)
     static const int errors[] = {EBUSY, EINVAL, ENOTRECOVERABLE, EOWNERDEAD};
 #else
-    static const int errors[] = {EAGAIN, EBUSY, EDEADLK, EINVAL, ENOTRECOVERABLE, EOWNERDEAD, EPERM};
+    static const int errors[] = {EAGAIN, EBUSY, EINVAL, ENOTRECOVERABLE, EOWNERDEAD};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -470,13 +472,13 @@ static void test_p101_pthread_mutex_trylock(struct p101_env *env, struct p101_er
 static void test_p101_pthread_mutex_unlock(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EBUSY, EDEADLK, EINVAL, EPERM};
+    static const int errors[] = {EINVAL, EPERM};
 #elif defined(__APPLE__)
     static const int errors[] = {EINVAL, EPERM};
 #elif defined(__FreeBSD__)
     static const int errors[] = {EINVAL, EPERM};
 #else
-    static const int errors[] = {EAGAIN, EBUSY, EDEADLK, EINVAL, ENOTRECOVERABLE, EOWNERDEAD, EPERM};
+    static const int errors[] = {EPERM};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -499,11 +501,11 @@ static void test_p101_pthread_mutexattr_destroy(struct p101_env *env, struct p10
 #ifdef __linux__
     static const int errors[] = {EIO};
 #elif defined(__APPLE__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {EINVAL};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {EINVAL};
 #else
-    static const int errors[] = {ENOMEM};
+    static const int errors[] = {EIO};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -526,9 +528,9 @@ static void test_p101_pthread_mutexattr_getprioceiling(struct p101_env *env, str
 #ifdef __linux__
     static const int errors[] = {EINVAL, EPERM};
 #elif defined(__APPLE__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {EINVAL};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {EINVAL};
 #else
     static const int errors[] = {EINVAL, EPERM};
 #endif
@@ -551,13 +553,13 @@ static void test_p101_pthread_mutexattr_getprioceiling(struct p101_env *env, str
 static void test_p101_pthread_mutexattr_getprotocol(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EINVAL, ENOTSUP, EPERM};
+    static const int errors[] = {EINVAL, EPERM};
 #elif defined(__APPLE__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {EINVAL};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {EINVAL};
 #else
-    static const int errors[] = {EINVAL, ENOTSUP, EPERM};
+    static const int errors[] = {EINVAL, EPERM};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -578,13 +580,13 @@ static void test_p101_pthread_mutexattr_getprotocol(struct p101_env *env, struct
 static void test_p101_pthread_mutexattr_getpshared(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EINVAL, ENOTSUP};
+    static const int errors[] = {EIO};
 #elif defined(__APPLE__)
-    static const int errors[] = {EINVAL};
+    static const int errors[] = {EIO};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EINVAL, ENOMEM};
-#else
     static const int errors[] = {EINVAL};
+#else
+    static const int errors[] = {EIO};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -607,11 +609,11 @@ static void test_p101_pthread_mutexattr_gettype(struct p101_env *env, struct p10
 #ifdef __linux__
     static const int errors[] = {EIO};
 #elif defined(__APPLE__)
-    static const int errors[] = {EINVAL, ENOMEM};
-#elif defined(__FreeBSD__)
-    static const int errors[] = {EINVAL, ENOMEM};
-#else
     static const int errors[] = {EINVAL};
+#elif defined(__FreeBSD__)
+    static const int errors[] = {EINVAL};
+#else
+    static const int errors[] = {EIO};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -636,7 +638,7 @@ static void test_p101_pthread_mutexattr_init(struct p101_env *env, struct p101_e
 #elif defined(__APPLE__)
     static const int errors[] = {EINVAL, ENOMEM};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {ENOMEM};
 #else
     static const int errors[] = {ENOMEM};
 #endif
@@ -661,9 +663,9 @@ static void test_p101_pthread_mutexattr_setprioceiling(struct p101_env *env, str
 #ifdef __linux__
     static const int errors[] = {EINVAL, EPERM};
 #elif defined(__APPLE__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {EINVAL};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {EINVAL};
 #else
     static const int errors[] = {EINVAL, EPERM};
 #endif
@@ -688,9 +690,9 @@ static void test_p101_pthread_mutexattr_setprotocol(struct p101_env *env, struct
 #ifdef __linux__
     static const int errors[] = {EINVAL, ENOTSUP, EPERM};
 #elif defined(__APPLE__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {EINVAL};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {EINVAL};
 #else
     static const int errors[] = {EINVAL, ENOTSUP, EPERM};
 #endif
@@ -717,7 +719,7 @@ static void test_p101_pthread_mutexattr_setpshared(struct p101_env *env, struct 
 #elif defined(__APPLE__)
     static const int errors[] = {EINVAL};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {EINVAL};
 #else
     static const int errors[] = {EINVAL};
 #endif
@@ -742,9 +744,9 @@ static void test_p101_pthread_mutexattr_settype(struct p101_env *env, struct p10
 #ifdef __linux__
     static const int errors[] = {EIO};
 #elif defined(__APPLE__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {EINVAL};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EINVAL, ENOMEM};
+    static const int errors[] = {EINVAL};
 #else
     static const int errors[] = {EINVAL};
 #endif
@@ -794,13 +796,13 @@ static void test_p101_pthread_once(struct p101_env *env, struct p101_error *err)
 static void test_p101_pthread_rwlock_destroy(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EAGAIN, ENOMEM, EPERM};
+    static const int errors[] = {EIO};
 #elif defined(__APPLE__)
     static const int errors[] = {EBUSY, EINVAL, EPERM};
 #elif defined(__FreeBSD__)
     static const int errors[] = {EBUSY, EINVAL, EPERM};
 #else
-    static const int errors[] = {EAGAIN, ENOMEM, EPERM};
+    static const int errors[] = {EIO};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -848,13 +850,13 @@ static void test_p101_pthread_rwlock_init(struct p101_env *env, struct p101_erro
 static void test_p101_pthread_rwlock_rdlock(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EAGAIN, EBUSY, EDEADLK};
+    static const int errors[] = {EAGAIN, EDEADLK};
 #elif defined(__APPLE__)
-    static const int errors[] = {EAGAIN, EBUSY, EDEADLK, EINVAL, ENOMEM};
+    static const int errors[] = {EAGAIN, EDEADLK, EINVAL, ENOMEM};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EAGAIN, EBUSY, EDEADLK, EINVAL, ENOMEM};
+    static const int errors[] = {EAGAIN, EDEADLK, EINVAL, ENOMEM};
 #else
-    static const int errors[] = {EAGAIN, EBUSY, EDEADLK};
+    static const int errors[] = {EAGAIN, EDEADLK};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -875,13 +877,13 @@ static void test_p101_pthread_rwlock_rdlock(struct p101_env *env, struct p101_er
 static void test_p101_pthread_rwlock_tryrdlock(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EAGAIN, EBUSY, EDEADLK};
+    static const int errors[] = {EAGAIN, EBUSY};
 #elif defined(__APPLE__)
     static const int errors[] = {EAGAIN, EBUSY, EDEADLK, EINVAL, ENOMEM};
 #elif defined(__FreeBSD__)
     static const int errors[] = {EAGAIN, EBUSY, EDEADLK, EINVAL, ENOMEM};
 #else
-    static const int errors[] = {EAGAIN, EBUSY, EDEADLK};
+    static const int errors[] = {EAGAIN, EBUSY};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -902,13 +904,13 @@ static void test_p101_pthread_rwlock_tryrdlock(struct p101_env *env, struct p101
 static void test_p101_pthread_rwlock_trywrlock(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EBUSY, EDEADLK};
+    static const int errors[] = {EBUSY};
 #elif defined(__APPLE__)
     static const int errors[] = {EBUSY, EDEADLK, EINVAL, ENOMEM};
 #elif defined(__FreeBSD__)
     static const int errors[] = {EBUSY, EDEADLK, EINVAL, ENOMEM};
 #else
-    static const int errors[] = {EBUSY, EDEADLK};
+    static const int errors[] = {EBUSY};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -956,13 +958,13 @@ static void test_p101_pthread_rwlock_unlock(struct p101_env *env, struct p101_er
 static void test_p101_pthread_rwlock_wrlock(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EBUSY, EDEADLK};
+    static const int errors[] = {EDEADLK};
 #elif defined(__APPLE__)
-    static const int errors[] = {EBUSY, EDEADLK, EINVAL, ENOMEM};
+    static const int errors[] = {EDEADLK, EINVAL, ENOMEM};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EBUSY, EDEADLK, EINVAL, ENOMEM};
+    static const int errors[] = {EDEADLK, EINVAL, ENOMEM};
 #else
-    static const int errors[] = {EBUSY, EDEADLK};
+    static const int errors[] = {EDEADLK};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -983,13 +985,13 @@ static void test_p101_pthread_rwlock_wrlock(struct p101_env *env, struct p101_er
 static void test_p101_pthread_rwlockattr_destroy(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {ENOMEM};
+    static const int errors[] = {EIO};
 #elif defined(__APPLE__)
     static const int errors[] = {EINVAL};
 #elif defined(__FreeBSD__)
     static const int errors[] = {EINVAL};
 #else
-    static const int errors[] = {ENOMEM};
+    static const int errors[] = {EIO};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -1010,13 +1012,13 @@ static void test_p101_pthread_rwlockattr_destroy(struct p101_env *env, struct p1
 static void test_p101_pthread_rwlockattr_getpshared(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EINVAL};
+    static const int errors[] = {EIO};
 #elif defined(__APPLE__)
     static const int errors[] = {EINVAL};
 #elif defined(__FreeBSD__)
     static const int errors[] = {EINVAL};
 #else
-    static const int errors[] = {EINVAL};
+    static const int errors[] = {EIO};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
@@ -1095,7 +1097,7 @@ static void test_p101_sem_close(struct p101_env *env, struct p101_error *err)
 #elif defined(__APPLE__)
     static const int errors[] = {EINVAL};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EACCES, EEXIST, EINTR, EINVAL, ENAMETOOLONG, ENFILE, ENOENT, ENOSPC};
+    static const int errors[] = {EINVAL};
 #else
     static const int errors[] = {EINVAL};
 #endif
@@ -1172,11 +1174,11 @@ static void test_p101_sem_post(struct p101_env *env, struct p101_error *err)
 static void test_p101_sem_trywait(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EAGAIN, EINTR, EINVAL, ETIMEDOUT};
+    static const int errors[] = {EAGAIN, EINTR, EINVAL};
 #elif defined(__APPLE__)
     static const int errors[] = {EAGAIN, EDEADLK, EINTR, EINVAL};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EAGAIN, EINTR, EINVAL};
+    static const int errors[] = {EAGAIN, EINVAL};
 #else
     static const int errors[] = {EAGAIN, EDEADLK, EINTR, EINVAL};
 #endif
@@ -1203,7 +1205,7 @@ static void test_p101_sem_unlink(struct p101_env *env, struct p101_error *err)
 #elif defined(__APPLE__)
     static const int errors[] = {EACCES, ENAMETOOLONG, ENOENT};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EACCES, EEXIST, EINTR, EINVAL, ENAMETOOLONG, ENFILE, ENOENT, ENOSPC};
+    static const int errors[] = {EACCES, ENAMETOOLONG, ENOENT};
 #else
     static const int errors[] = {EACCES, ENAMETOOLONG, ENOENT};
 #endif
@@ -1226,13 +1228,13 @@ static void test_p101_sem_unlink(struct p101_env *env, struct p101_error *err)
 static void test_p101_sem_wait(struct p101_env *env, struct p101_error *err)
 {
 #ifdef __linux__
-    static const int errors[] = {EAGAIN, EINTR, EINVAL, ETIMEDOUT};
+    static const int errors[] = {EIO};
 #elif defined(__APPLE__)
     static const int errors[] = {EAGAIN, EDEADLK, EINTR, EINVAL};
 #elif defined(__FreeBSD__)
-    static const int errors[] = {EAGAIN, EINTR, EINVAL};
+    static const int errors[] = {EINTR, EINVAL};
 #else
-    static const int errors[] = {EAGAIN, EDEADLK, EINTR, EINVAL};
+    static const int errors[] = {EDEADLK, EINTR, EINVAL};
 #endif
 
     for(size_t index = 0U; index < sizeof(errors) / sizeof(errors[0]); index++)
