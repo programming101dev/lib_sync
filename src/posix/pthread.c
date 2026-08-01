@@ -94,12 +94,12 @@ static void pthread_track_pointer_wait(const struct p101_env *env, p101_env_reso
     p101_env_track_resource(env, event, resource_class, resource_id, NULL, 0U, metadata, file_name, function_name, line_number);
 }
 
-#define P101_PTHREAD_TRACK_MUTEX_ACQUIRE(env, mutex) pthread_track_held((env), P101_ENV_RESOURCE_ACQUIRE, "pthread-mutex-held", (mutex), __FILE__, __func__, __LINE__)
-#define P101_PTHREAD_TRACK_MUTEX_RELEASE(env, mutex) pthread_track_held((env), P101_ENV_RESOURCE_RELEASE, "pthread-mutex-held", (mutex), __FILE__, __func__, __LINE__)
-#define P101_PTHREAD_TRACK_RWLOCK_ACQUIRE(env, rwlock) pthread_track_held((env), P101_ENV_RESOURCE_ACQUIRE, "pthread-rwlock-held", (rwlock), __FILE__, __func__, __LINE__)
-#define P101_PTHREAD_TRACK_RWLOCK_RELEASE(env, rwlock) pthread_track_held((env), P101_ENV_RESOURCE_RELEASE, "pthread-rwlock-held", (rwlock), __FILE__, __func__, __LINE__)
-#define P101_PTHREAD_TRACK_WAIT_ACQUIRE(env, resource_class, resource) pthread_track_pointer_wait((env), P101_ENV_RESOURCE_ACQUIRE, (resource_class), (resource), __FILE__, __func__, __LINE__)
-#define P101_PTHREAD_TRACK_WAIT_RELEASE(env, resource_class, resource) pthread_track_pointer_wait((env), P101_ENV_RESOURCE_RELEASE, (resource_class), (resource), __FILE__, __func__, __LINE__)
+#define P101_PTHREAD_TRACK_MUTEX_ACQUIRE(env, mutex) pthread_track_held((env), P101_ENV_RESOURCE_ACQUIRE, "pthread-mutex-held", (const void *)(mutex), __FILE__, __func__, __LINE__)
+#define P101_PTHREAD_TRACK_MUTEX_RELEASE(env, mutex) pthread_track_held((env), P101_ENV_RESOURCE_RELEASE, "pthread-mutex-held", (const void *)(mutex), __FILE__, __func__, __LINE__)
+#define P101_PTHREAD_TRACK_RWLOCK_ACQUIRE(env, rwlock) pthread_track_held((env), P101_ENV_RESOURCE_ACQUIRE, "pthread-rwlock-held", (const void *)(rwlock), __FILE__, __func__, __LINE__)
+#define P101_PTHREAD_TRACK_RWLOCK_RELEASE(env, rwlock) pthread_track_held((env), P101_ENV_RESOURCE_RELEASE, "pthread-rwlock-held", (const void *)(rwlock), __FILE__, __func__, __LINE__)
+#define P101_PTHREAD_TRACK_WAIT_ACQUIRE(env, resource_class, resource) pthread_track_pointer_wait((env), P101_ENV_RESOURCE_ACQUIRE, (resource_class), (const void *)(resource), __FILE__, __func__, __LINE__)
+#define P101_PTHREAD_TRACK_WAIT_RELEASE(env, resource_class, resource) pthread_track_pointer_wait((env), P101_ENV_RESOURCE_RELEASE, (resource_class), (const void *)(resource), __FILE__, __func__, __LINE__)
 
 /* cppcheck-suppress funcArgNamesDifferentUnnamed */
 int p101_pthread_cond_broadcast(const struct p101_env *env, struct p101_error *err, pthread_cond_t *cond)
