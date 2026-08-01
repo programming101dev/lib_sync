@@ -135,7 +135,7 @@ int p101_pthread_cond_destroy(const struct p101_env *env, struct p101_error *err
     }
     else
     {
-        P101_TRACK_POINTER_RESOURCE_RELEASE(env, "pthread-condition", cond, NULL);
+        P101_TRACK_POINTER_RESOURCE_RELEASE(env, "pthread-condition", (const void *)cond, NULL);
     }
 
     P101_TRACE_EXIT(env);
@@ -157,7 +157,7 @@ int p101_pthread_cond_init(const struct p101_env *env, struct p101_error *err, p
     }
     else
     {
-        P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-condition", cond, 0U, NULL);
+        P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-condition", (const void *)cond, 0U, NULL);
     }
 
     P101_TRACE_EXIT(env);
@@ -241,7 +241,7 @@ int p101_pthread_condattr_destroy(const struct p101_env *env, struct p101_error 
     }
     else
     {
-        P101_TRACK_POINTER_RESOURCE_RELEASE(env, "pthread-condition-attributes", attr, NULL);
+        P101_TRACK_POINTER_RESOURCE_RELEASE(env, "pthread-condition-attributes", (const void *)attr, NULL);
     }
 
     P101_TRACE_EXIT(env);
@@ -263,7 +263,7 @@ int p101_pthread_condattr_init(const struct p101_env *env, struct p101_error *er
     }
     else
     {
-        P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-condition-attributes", attr, 0U, NULL);
+        P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-condition-attributes", (const void *)attr, 0U, NULL);
     }
 
     P101_TRACE_EXIT(env);
@@ -285,7 +285,7 @@ int p101_pthread_mutex_destroy(const struct p101_env *env, struct p101_error *er
     }
     else
     {
-        P101_TRACK_POINTER_RESOURCE_RELEASE(env, "pthread-mutex", mutex, NULL);
+        P101_TRACK_POINTER_RESOURCE_RELEASE(env, "pthread-mutex", (const void *)mutex, NULL);
     }
 
     P101_TRACE_EXIT(env);
@@ -307,7 +307,7 @@ int p101_pthread_mutex_init(const struct p101_env *env, struct p101_error *err, 
     }
     else
     {
-        P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-mutex", mutex, 0U, NULL);
+        P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-mutex", (const void *)mutex, 0U, NULL);
     }
 
     P101_TRACE_EXIT(env);
@@ -399,7 +399,7 @@ int p101_pthread_mutexattr_destroy(const struct p101_env *env, struct p101_error
     }
     else
     {
-        P101_TRACK_POINTER_RESOURCE_RELEASE(env, "pthread-mutex-attributes", attr, NULL);
+        P101_TRACK_POINTER_RESOURCE_RELEASE(env, "pthread-mutex-attributes", (const void *)attr, NULL);
     }
 
     P101_TRACE_EXIT(env);
@@ -439,7 +439,7 @@ int p101_pthread_mutexattr_init(const struct p101_env *env, struct p101_error *e
     }
     else
     {
-        P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-mutex-attributes", attr, 0U, NULL);
+        P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-mutex-attributes", (const void *)attr, 0U, NULL);
     }
 
     P101_TRACE_EXIT(env);
@@ -497,7 +497,7 @@ int p101_pthread_rwlock_destroy(const struct p101_env *env, struct p101_error *e
     }
     else
     {
-        P101_TRACK_POINTER_RESOURCE_RELEASE(env, "pthread-rwlock", rwlock, NULL);
+        P101_TRACK_POINTER_RESOURCE_RELEASE(env, "pthread-rwlock", (const void *)rwlock, NULL);
     }
 
     P101_TRACE_EXIT(env);
@@ -519,7 +519,7 @@ int p101_pthread_rwlock_init(const struct p101_env *env, struct p101_error *err,
     }
     else
     {
-        P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-rwlock", rwlock, 0U, NULL);
+        P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-rwlock", (const void *)rwlock, 0U, NULL);
     }
 
     P101_TRACE_EXIT(env);
@@ -659,7 +659,7 @@ int p101_pthread_rwlockattr_destroy(const struct p101_env *env, struct p101_erro
     }
     else
     {
-        P101_TRACK_POINTER_RESOURCE_RELEASE(env, "pthread-rwlock-attributes", attr, NULL);
+        P101_TRACK_POINTER_RESOURCE_RELEASE(env, "pthread-rwlock-attributes", (const void *)attr, NULL);
     }
 
     P101_TRACE_EXIT(env);
@@ -681,7 +681,7 @@ int p101_pthread_rwlockattr_init(const struct p101_env *env, struct p101_error *
     }
     else
     {
-        P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-rwlock-attributes", attr, 0U, NULL);
+        P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-rwlock-attributes", (const void *)attr, 0U, NULL);
     }
 
     P101_TRACE_EXIT(env);
