@@ -127,7 +127,7 @@ int p101_pthread_cond_destroy(const struct p101_env *env, struct p101_error *err
 
     P101_TRACE(env);
     P101_WRAPPER_FAULT_RETURN_CODE(env, err);
-    p101_env_pointer_resource_id(resource_id, sizeof(resource_id), cond);
+    p101_env_pointer_resource_id(resource_id, sizeof(resource_id), (const void *)cond);
     errno   = 0;
     ret_val = pthread_cond_destroy(cond);
 
@@ -235,7 +235,7 @@ int p101_pthread_condattr_destroy(const struct p101_env *env, struct p101_error 
 
     P101_TRACE(env);
     P101_WRAPPER_FAULT_RETURN_CODE(env, err);
-    p101_env_pointer_resource_id(resource_id, sizeof(resource_id), attr);
+    p101_env_pointer_resource_id(resource_id, sizeof(resource_id), (const void *)attr);
     errno   = 0;
     ret_val = pthread_condattr_destroy(attr);
 
@@ -281,7 +281,7 @@ int p101_pthread_mutex_destroy(const struct p101_env *env, struct p101_error *er
 
     P101_TRACE(env);
     P101_WRAPPER_FAULT_RETURN_CODE(env, err);
-    p101_env_pointer_resource_id(resource_id, sizeof(resource_id), mutex);
+    p101_env_pointer_resource_id(resource_id, sizeof(resource_id), (const void *)mutex);
     errno   = 0;
     ret_val = pthread_mutex_destroy(mutex);
 
@@ -397,7 +397,7 @@ int p101_pthread_mutexattr_destroy(const struct p101_env *env, struct p101_error
 
     P101_TRACE(env);
     P101_WRAPPER_FAULT_RETURN_CODE(env, err);
-    p101_env_pointer_resource_id(resource_id, sizeof(resource_id), attr);
+    p101_env_pointer_resource_id(resource_id, sizeof(resource_id), (const void *)attr);
     errno   = 0;
     ret_val = pthread_mutexattr_destroy(attr);
 
@@ -497,7 +497,7 @@ int p101_pthread_rwlock_destroy(const struct p101_env *env, struct p101_error *e
 
     P101_TRACE(env);
     P101_WRAPPER_FAULT_RETURN_CODE(env, err);
-    p101_env_pointer_resource_id(resource_id, sizeof(resource_id), rwlock);
+    p101_env_pointer_resource_id(resource_id, sizeof(resource_id), (const void *)rwlock);
     errno   = 0;
     ret_val = pthread_rwlock_destroy(rwlock);
 
@@ -661,7 +661,7 @@ int p101_pthread_rwlockattr_destroy(const struct p101_env *env, struct p101_erro
 
     P101_TRACE(env);
     P101_WRAPPER_FAULT_RETURN_CODE(env, err);
-    p101_env_pointer_resource_id(resource_id, sizeof(resource_id), attr);
+    p101_env_pointer_resource_id(resource_id, sizeof(resource_id), (const void *)attr);
     errno   = 0;
     ret_val = pthread_rwlockattr_destroy(attr);
 
