@@ -107,7 +107,7 @@ int p101_pthread_cond_broadcast(const struct p101_env *env, struct p101_error *e
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     errno   = 0;
     ret_val = pthread_cond_broadcast(cond);
 
@@ -116,7 +116,7 @@ int p101_pthread_cond_broadcast(const struct p101_env *env, struct p101_error *e
         P101_ERROR_RAISE_ERRNO(err, ret_val);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -126,7 +126,7 @@ int p101_pthread_cond_destroy(const struct p101_env *env, struct p101_error *err
     int  ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     p101_env_pointer_resource_id(resource_id, sizeof(resource_id), (const void *)cond);
     errno   = 0;
     ret_val = pthread_cond_destroy(cond);
@@ -140,7 +140,7 @@ int p101_pthread_cond_destroy(const struct p101_env *env, struct p101_error *err
         P101_TRACK_RESOURCE_RELEASE(env, "pthread-condition", resource_id, NULL);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -149,7 +149,7 @@ int p101_pthread_cond_init(const struct p101_env *env, struct p101_error *err, p
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     errno   = 0;
     ret_val = pthread_cond_init(cond, attr);
 
@@ -162,7 +162,7 @@ int p101_pthread_cond_init(const struct p101_env *env, struct p101_error *err, p
         P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-condition", (const void *)cond, 0U, NULL);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -171,7 +171,7 @@ int p101_pthread_cond_signal(const struct p101_env *env, struct p101_error *err,
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     errno   = 0;
     ret_val = pthread_cond_signal(cond);
 
@@ -180,7 +180,7 @@ int p101_pthread_cond_signal(const struct p101_env *env, struct p101_error *err,
         P101_ERROR_RAISE_ERRNO(err, ret_val);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -189,7 +189,7 @@ int p101_pthread_cond_timedwait(const struct p101_env *env, struct p101_error *e
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     P101_PTHREAD_TRACK_MUTEX_RELEASE(env, mutex);
     P101_PTHREAD_TRACK_WAIT_ACQUIRE(env, "pthread-condition-wait", cond);
     errno   = 0;
@@ -202,7 +202,7 @@ int p101_pthread_cond_timedwait(const struct p101_env *env, struct p101_error *e
         P101_ERROR_RAISE_ERRNO(err, ret_val);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -211,7 +211,7 @@ int p101_pthread_cond_wait(const struct p101_env *env, struct p101_error *err, p
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     P101_PTHREAD_TRACK_MUTEX_RELEASE(env, mutex);
     P101_PTHREAD_TRACK_WAIT_ACQUIRE(env, "pthread-condition-wait", cond);
     errno   = 0;
@@ -224,7 +224,7 @@ int p101_pthread_cond_wait(const struct p101_env *env, struct p101_error *err, p
         P101_ERROR_RAISE_ERRNO(err, ret_val);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -234,7 +234,7 @@ int p101_pthread_condattr_destroy(const struct p101_env *env, struct p101_error 
     int  ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     p101_env_pointer_resource_id(resource_id, sizeof(resource_id), (const void *)attr);
     errno   = 0;
     ret_val = pthread_condattr_destroy(attr);
@@ -248,7 +248,7 @@ int p101_pthread_condattr_destroy(const struct p101_env *env, struct p101_error 
         P101_TRACK_RESOURCE_RELEASE(env, "pthread-condition-attributes", resource_id, NULL);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -257,7 +257,7 @@ int p101_pthread_condattr_init(const struct p101_env *env, struct p101_error *er
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     errno   = 0;
     ret_val = pthread_condattr_init(attr);
 
@@ -270,7 +270,7 @@ int p101_pthread_condattr_init(const struct p101_env *env, struct p101_error *er
         P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-condition-attributes", (const void *)attr, 0U, NULL);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -280,7 +280,7 @@ int p101_pthread_mutex_destroy(const struct p101_env *env, struct p101_error *er
     int  ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     p101_env_pointer_resource_id(resource_id, sizeof(resource_id), (const void *)mutex);
     errno   = 0;
     ret_val = pthread_mutex_destroy(mutex);
@@ -294,7 +294,7 @@ int p101_pthread_mutex_destroy(const struct p101_env *env, struct p101_error *er
         P101_TRACK_RESOURCE_RELEASE(env, "pthread-mutex", resource_id, NULL);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -303,7 +303,7 @@ int p101_pthread_mutex_init(const struct p101_env *env, struct p101_error *err, 
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     errno   = 0;
     ret_val = pthread_mutex_init(mutex, attr);
 
@@ -316,7 +316,7 @@ int p101_pthread_mutex_init(const struct p101_env *env, struct p101_error *err, 
         P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-mutex", (const void *)mutex, 0U, NULL);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -325,7 +325,7 @@ int p101_pthread_mutex_lock(const struct p101_env *env, struct p101_error *err, 
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     P101_PTHREAD_TRACK_WAIT_ACQUIRE(env, "pthread-mutex-wait", mutex);
     errno   = 0;
     ret_val = pthread_mutex_lock(mutex);
@@ -340,7 +340,7 @@ int p101_pthread_mutex_lock(const struct p101_env *env, struct p101_error *err, 
         P101_PTHREAD_TRACK_MUTEX_ACQUIRE(env, mutex);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -349,7 +349,7 @@ int p101_pthread_mutex_trylock(const struct p101_env *env, struct p101_error *er
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     P101_PTHREAD_TRACK_WAIT_ACQUIRE(env, "pthread-mutex-wait", mutex);
     errno   = 0;
     ret_val = pthread_mutex_trylock(mutex);
@@ -364,7 +364,7 @@ int p101_pthread_mutex_trylock(const struct p101_env *env, struct p101_error *er
         P101_PTHREAD_TRACK_MUTEX_ACQUIRE(env, mutex);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -373,7 +373,7 @@ int p101_pthread_mutex_unlock(const struct p101_env *env, struct p101_error *err
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     errno   = 0;
     ret_val = pthread_mutex_unlock(mutex);
 
@@ -386,7 +386,7 @@ int p101_pthread_mutex_unlock(const struct p101_env *env, struct p101_error *err
         P101_PTHREAD_TRACK_MUTEX_RELEASE(env, mutex);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -396,7 +396,7 @@ int p101_pthread_mutexattr_destroy(const struct p101_env *env, struct p101_error
     int  ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     p101_env_pointer_resource_id(resource_id, sizeof(resource_id), (const void *)attr);
     errno   = 0;
     ret_val = pthread_mutexattr_destroy(attr);
@@ -410,7 +410,7 @@ int p101_pthread_mutexattr_destroy(const struct p101_env *env, struct p101_error
         P101_TRACK_RESOURCE_RELEASE(env, "pthread-mutex-attributes", resource_id, NULL);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -419,7 +419,7 @@ int p101_pthread_mutexattr_gettype(const struct p101_env *env, struct p101_error
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     errno   = 0;
     ret_val = pthread_mutexattr_gettype(attr, type);
 
@@ -428,7 +428,7 @@ int p101_pthread_mutexattr_gettype(const struct p101_env *env, struct p101_error
         P101_ERROR_RAISE_ERRNO(err, ret_val);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -437,7 +437,7 @@ int p101_pthread_mutexattr_init(const struct p101_env *env, struct p101_error *e
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     errno   = 0;
     ret_val = pthread_mutexattr_init(attr);
 
@@ -450,7 +450,7 @@ int p101_pthread_mutexattr_init(const struct p101_env *env, struct p101_error *e
         P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-mutex-attributes", (const void *)attr, 0U, NULL);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -459,7 +459,7 @@ int p101_pthread_mutexattr_settype(const struct p101_env *env, struct p101_error
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     errno   = 0;
     ret_val = pthread_mutexattr_settype(attr, type);
 
@@ -468,7 +468,7 @@ int p101_pthread_mutexattr_settype(const struct p101_env *env, struct p101_error
         P101_ERROR_RAISE_ERRNO(err, ret_val);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -477,7 +477,7 @@ int p101_pthread_once(const struct p101_env *env, struct p101_error *err, pthrea
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     errno   = 0;
     ret_val = pthread_once(once_control, init_routine);
 
@@ -486,7 +486,7 @@ int p101_pthread_once(const struct p101_env *env, struct p101_error *err, pthrea
         P101_ERROR_RAISE_ERRNO(err, ret_val);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -496,7 +496,7 @@ int p101_pthread_rwlock_destroy(const struct p101_env *env, struct p101_error *e
     int  ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     p101_env_pointer_resource_id(resource_id, sizeof(resource_id), (const void *)rwlock);
     errno   = 0;
     ret_val = pthread_rwlock_destroy(rwlock);
@@ -510,7 +510,7 @@ int p101_pthread_rwlock_destroy(const struct p101_env *env, struct p101_error *e
         P101_TRACK_RESOURCE_RELEASE(env, "pthread-rwlock", resource_id, NULL);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -519,7 +519,7 @@ int p101_pthread_rwlock_init(const struct p101_env *env, struct p101_error *err,
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     errno   = 0;
     ret_val = pthread_rwlock_init(rwlock, attr);
 
@@ -532,7 +532,7 @@ int p101_pthread_rwlock_init(const struct p101_env *env, struct p101_error *err,
         P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-rwlock", (const void *)rwlock, 0U, NULL);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -541,7 +541,7 @@ int p101_pthread_rwlock_rdlock(const struct p101_env *env, struct p101_error *er
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     P101_PTHREAD_TRACK_WAIT_ACQUIRE(env, "pthread-rwlock-read-wait", rwlock);
     errno   = 0;
     ret_val = pthread_rwlock_rdlock(rwlock);
@@ -556,7 +556,7 @@ int p101_pthread_rwlock_rdlock(const struct p101_env *env, struct p101_error *er
         P101_PTHREAD_TRACK_RWLOCK_ACQUIRE(env, rwlock);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -565,7 +565,7 @@ int p101_pthread_rwlock_tryrdlock(const struct p101_env *env, struct p101_error 
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     P101_PTHREAD_TRACK_WAIT_ACQUIRE(env, "pthread-rwlock-read-wait", rwlock);
     errno   = 0;
     ret_val = pthread_rwlock_tryrdlock(rwlock);
@@ -580,7 +580,7 @@ int p101_pthread_rwlock_tryrdlock(const struct p101_env *env, struct p101_error 
         P101_PTHREAD_TRACK_RWLOCK_ACQUIRE(env, rwlock);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -589,7 +589,7 @@ int p101_pthread_rwlock_trywrlock(const struct p101_env *env, struct p101_error 
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     P101_PTHREAD_TRACK_WAIT_ACQUIRE(env, "pthread-rwlock-write-wait", rwlock);
     errno   = 0;
     ret_val = pthread_rwlock_trywrlock(rwlock);
@@ -604,7 +604,7 @@ int p101_pthread_rwlock_trywrlock(const struct p101_env *env, struct p101_error 
         P101_PTHREAD_TRACK_RWLOCK_ACQUIRE(env, rwlock);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -613,7 +613,7 @@ int p101_pthread_rwlock_unlock(const struct p101_env *env, struct p101_error *er
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     errno   = 0;
     ret_val = pthread_rwlock_unlock(rwlock);
 
@@ -626,7 +626,7 @@ int p101_pthread_rwlock_unlock(const struct p101_env *env, struct p101_error *er
         P101_PTHREAD_TRACK_RWLOCK_RELEASE(env, rwlock);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -635,7 +635,7 @@ int p101_pthread_rwlock_wrlock(const struct p101_env *env, struct p101_error *er
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     P101_PTHREAD_TRACK_WAIT_ACQUIRE(env, "pthread-rwlock-write-wait", rwlock);
     errno   = 0;
     ret_val = pthread_rwlock_wrlock(rwlock);
@@ -650,7 +650,7 @@ int p101_pthread_rwlock_wrlock(const struct p101_env *env, struct p101_error *er
         P101_PTHREAD_TRACK_RWLOCK_ACQUIRE(env, rwlock);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -660,7 +660,7 @@ int p101_pthread_rwlockattr_destroy(const struct p101_env *env, struct p101_erro
     int  ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     p101_env_pointer_resource_id(resource_id, sizeof(resource_id), (const void *)attr);
     errno   = 0;
     ret_val = pthread_rwlockattr_destroy(attr);
@@ -674,7 +674,7 @@ int p101_pthread_rwlockattr_destroy(const struct p101_env *env, struct p101_erro
         P101_TRACK_RESOURCE_RELEASE(env, "pthread-rwlock-attributes", resource_id, NULL);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -683,7 +683,7 @@ int p101_pthread_rwlockattr_init(const struct p101_env *env, struct p101_error *
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN_CODE(env, err);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
     errno   = 0;
     ret_val = pthread_rwlockattr_init(attr);
 
@@ -696,6 +696,6 @@ int p101_pthread_rwlockattr_init(const struct p101_env *env, struct p101_error *
         P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-rwlock-attributes", (const void *)attr, 0U, NULL);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }

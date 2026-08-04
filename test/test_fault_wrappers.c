@@ -213,8 +213,8 @@ static void test_p101_pthread_cond_init(struct p101_env *env, struct p101_error 
     memset(argument_2, 0xA5, sizeof(argument_2));
     memcpy(argument_2_before, argument_2, sizeof(argument_2));
 #ifdef __linux__
-    static const int         errors[]      = {EIO};
-    static const char *const error_names[] = {"EIO"};
+    static const int         errors[]      = {EAGAIN, ENOMEM};
+    static const char *const error_names[] = {"EAGAIN", "ENOMEM"};
 #elif defined(__APPLE__)
     static const int         errors[]      = {EAGAIN, EINVAL, ENOMEM};
     static const char *const error_names[] = {"EAGAIN", "EINVAL", "ENOMEM"};
@@ -357,8 +357,8 @@ static void test_p101_pthread_cond_wait(struct p101_env *env, struct p101_error 
     memset(argument_3, 0xA5, sizeof(argument_3));
     memcpy(argument_3_before, argument_3, sizeof(argument_3));
 #ifdef __linux__
-    static const int         errors[]      = {EIO};
-    static const char *const error_names[] = {"EIO"};
+    static const int         errors[]      = {EAGAIN, ENOTRECOVERABLE, EOWNERDEAD, EPERM};
+    static const char *const error_names[] = {"EAGAIN", "ENOTRECOVERABLE", "EOWNERDEAD", "EPERM"};
 #elif defined(__APPLE__)
     static const int         errors[]      = {EINVAL};
     static const char *const error_names[] = {"EINVAL"};
@@ -493,8 +493,8 @@ static void test_p101_pthread_condattr_init(struct p101_env *env, struct p101_er
     memset(argument_2, 0xA5, sizeof(argument_2));
     memcpy(argument_2_before, argument_2, sizeof(argument_2));
 #ifdef __linux__
-    static const int         errors[]      = {EIO};
-    static const char *const error_names[] = {"EIO"};
+    static const int         errors[]      = {ENOMEM};
+    static const char *const error_names[] = {"ENOMEM"};
 #elif defined(__APPLE__)
     static const int         errors[]      = {ENOMEM};
     static const char *const error_names[] = {"ENOMEM"};
@@ -673,8 +673,8 @@ static void test_p101_pthread_mutex_init(struct p101_env *env, struct p101_error
     memset(argument_2, 0xA5, sizeof(argument_2));
     memcpy(argument_2_before, argument_2, sizeof(argument_2));
 #ifdef __linux__
-    static const int         errors[]      = {EIO};
-    static const char *const error_names[] = {"EIO"};
+    static const int         errors[]      = {EAGAIN, EINVAL, ENOMEM, EPERM};
+    static const char *const error_names[] = {"EAGAIN", "EINVAL", "ENOMEM", "EPERM"};
 #elif defined(__APPLE__)
     static const int         errors[]      = {EINVAL, ENOMEM};
     static const char *const error_names[] = {"EINVAL", "ENOMEM"};
@@ -1128,8 +1128,8 @@ static void test_p101_pthread_mutexattr_init(struct p101_env *env, struct p101_e
     memset(argument_2, 0xA5, sizeof(argument_2));
     memcpy(argument_2_before, argument_2, sizeof(argument_2));
 #ifdef __linux__
-    static const int         errors[]      = {EIO};
-    static const char *const error_names[] = {"EIO"};
+    static const int         errors[]      = {ENOMEM};
+    static const char *const error_names[] = {"ENOMEM"};
 #elif defined(__APPLE__)
     static const int         errors[]      = {EINVAL, ENOMEM};
     static const char *const error_names[] = {"EINVAL", "ENOMEM"};
@@ -1308,8 +1308,8 @@ static void test_p101_pthread_mutexattr_settype(struct p101_env *env, struct p10
     memset(argument_2, 0xA5, sizeof(argument_2));
     memcpy(argument_2_before, argument_2, sizeof(argument_2));
 #ifdef __linux__
-    static const int         errors[]      = {EIO};
-    static const char *const error_names[] = {"EIO"};
+    static const int         errors[]      = {EINVAL};
+    static const char *const error_names[] = {"EINVAL"};
 #elif defined(__APPLE__)
     static const int         errors[]      = {EINVAL};
     static const char *const error_names[] = {"EINVAL"};
@@ -2108,8 +2108,8 @@ static void test_p101_sem_wait(struct p101_env *env, struct p101_error *err)
     memset(argument_2, 0xA5, sizeof(argument_2));
     memcpy(argument_2_before, argument_2, sizeof(argument_2));
 #ifdef __linux__
-    static const int         errors[]      = {EIO};
-    static const char *const error_names[] = {"EIO"};
+    static const int         errors[]      = {EDEADLK, EINTR, EINVAL};
+    static const char *const error_names[] = {"EDEADLK", "EINTR", "EINVAL"};
 #elif defined(__APPLE__)
     static const int         errors[]      = {EAGAIN, EDEADLK, EINTR, EINVAL};
     static const char *const error_names[] = {"EAGAIN", "EDEADLK", "EINTR", "EINVAL"};

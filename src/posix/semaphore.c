@@ -56,7 +56,7 @@ int p101_sem_close(const struct p101_env *env, struct p101_error *err, sem_t *se
     char resource_id[RESOURCE_ID_SIZE];
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN(env, err, -1);
+    P101_WRAPPER_FAULT_RETURN(env, err, ret_val, -1);
     p101_env_pointer_resource_id(resource_id, sizeof(resource_id), sem);
     errno   = 0;
     ret_val = sem_close(sem);
@@ -70,7 +70,7 @@ int p101_sem_close(const struct p101_env *env, struct p101_error *err, sem_t *se
         P101_TRACK_RESOURCE_RELEASE(env, "named-semaphore", resource_id, NULL);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -80,7 +80,7 @@ sem_t *p101_sem_open(const struct p101_env *env, struct p101_error *err, const c
     va_list args;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN(env, err, SEM_FAILED);
+    P101_WRAPPER_FAULT_RETURN(env, err, ret_val, SEM_FAILED);
     errno = 0;
 
     if(sem_open_uses_create_args(oflag))
@@ -109,7 +109,7 @@ sem_t *p101_sem_open(const struct p101_env *env, struct p101_error *err, const c
         P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "named-semaphore", ret_val, 0U, name);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -118,7 +118,7 @@ int p101_sem_post(const struct p101_env *env, struct p101_error *err, sem_t *sem
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN(env, err, -1);
+    P101_WRAPPER_FAULT_RETURN(env, err, ret_val, -1);
     errno   = 0;
     ret_val = sem_post(sem);
 
@@ -127,7 +127,7 @@ int p101_sem_post(const struct p101_env *env, struct p101_error *err, sem_t *sem
         P101_ERROR_RAISE_ERRNO(err, errno);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -136,7 +136,7 @@ int p101_sem_trywait(const struct p101_env *env, struct p101_error *err, sem_t *
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN(env, err, -1);
+    P101_WRAPPER_FAULT_RETURN(env, err, ret_val, -1);
     errno   = 0;
     ret_val = sem_trywait(sem);
 
@@ -145,7 +145,7 @@ int p101_sem_trywait(const struct p101_env *env, struct p101_error *err, sem_t *
         P101_ERROR_RAISE_ERRNO(err, errno);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -154,7 +154,7 @@ int p101_sem_unlink(const struct p101_env *env, struct p101_error *err, const ch
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN(env, err, -1);
+    P101_WRAPPER_FAULT_RETURN(env, err, ret_val, -1);
     errno   = 0;
     ret_val = sem_unlink(name);
 
@@ -163,7 +163,7 @@ int p101_sem_unlink(const struct p101_env *env, struct p101_error *err, const ch
         P101_ERROR_RAISE_ERRNO(err, errno);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
 
@@ -172,7 +172,7 @@ int p101_sem_wait(const struct p101_env *env, struct p101_error *err, sem_t *sem
     int ret_val;
 
     P101_TRACE(env);
-    P101_WRAPPER_FAULT_RETURN(env, err, -1);
+    P101_WRAPPER_FAULT_RETURN(env, err, ret_val, -1);
     errno   = 0;
     ret_val = sem_wait(sem);
 
@@ -181,6 +181,6 @@ int p101_sem_wait(const struct p101_env *env, struct p101_error *err, sem_t *sem
         P101_ERROR_RAISE_ERRNO(err, errno);
     }
 
-    P101_TRACE_EXIT(env);
+    P101_WRAPPER_DONE(env);
     return ret_val;
 }
