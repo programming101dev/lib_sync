@@ -1,6 +1,7 @@
 #include <arpa/inet.h>
 #include <dirent.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <fmtmsg.h>
 #include <fnmatch.h>
 #include <ftw.h>
@@ -3853,9 +3854,17 @@ static void test_p101_sem_close(struct p101_env *env, struct p101_error *err)
                 p101_error_destroy(native_err);
                 _Exit(77);
             }
-            sem_t native_argument_2 = {0};
-            int   native_result     = p101_sem_close(native_env, native_err, &native_argument_2);
+            char   native_argument_2_name[96];
+            sem_t *native_argument_2;
+            (void)snprintf(native_argument_2_name, sizeof(native_argument_2_name), "/p101-wrapper-sem-%ld", (long)getpid());
+            native_argument_2 = sem_open(native_argument_2_name, O_CREAT | O_EXCL, 0600, 0U);
+            if(native_argument_2 == SEM_FAILED)
+            {
+                _Exit(77);
+            }
+            int native_result = p101_sem_close(native_env, native_err, native_argument_2);
             (void)native_result;
+            (void)sem_unlink(native_argument_2_name);
             p101_env_destroy(native_env);
             p101_error_destroy(native_err);
             _Exit(EXIT_SUCCESS);
@@ -4021,9 +4030,18 @@ static void test_p101_sem_post(struct p101_env *env, struct p101_error *err)
                 p101_error_destroy(native_err);
                 _Exit(77);
             }
-            sem_t native_argument_2 = {0};
-            int   native_result     = p101_sem_post(native_env, native_err, &native_argument_2);
+            char   native_argument_2_name[96];
+            sem_t *native_argument_2;
+            (void)snprintf(native_argument_2_name, sizeof(native_argument_2_name), "/p101-wrapper-sem-%ld", (long)getpid());
+            native_argument_2 = sem_open(native_argument_2_name, O_CREAT | O_EXCL, 0600, 0U);
+            if(native_argument_2 == SEM_FAILED)
+            {
+                _Exit(77);
+            }
+            int native_result = p101_sem_post(native_env, native_err, native_argument_2);
             (void)native_result;
+            (void)sem_close(native_argument_2);
+            (void)sem_unlink(native_argument_2_name);
             p101_env_destroy(native_env);
             p101_error_destroy(native_err);
             _Exit(EXIT_SUCCESS);
@@ -4108,9 +4126,18 @@ static void test_p101_sem_trywait(struct p101_env *env, struct p101_error *err)
                 p101_error_destroy(native_err);
                 _Exit(77);
             }
-            sem_t native_argument_2 = {0};
-            int   native_result     = p101_sem_trywait(native_env, native_err, &native_argument_2);
+            char   native_argument_2_name[96];
+            sem_t *native_argument_2;
+            (void)snprintf(native_argument_2_name, sizeof(native_argument_2_name), "/p101-wrapper-sem-%ld", (long)getpid());
+            native_argument_2 = sem_open(native_argument_2_name, O_CREAT | O_EXCL, 0600, 1U);
+            if(native_argument_2 == SEM_FAILED)
+            {
+                _Exit(77);
+            }
+            int native_result = p101_sem_trywait(native_env, native_err, native_argument_2);
             (void)native_result;
+            (void)sem_close(native_argument_2);
+            (void)sem_unlink(native_argument_2_name);
             p101_env_destroy(native_env);
             p101_error_destroy(native_err);
             _Exit(EXIT_SUCCESS);
@@ -4276,9 +4303,18 @@ static void test_p101_sem_wait(struct p101_env *env, struct p101_error *err)
                 p101_error_destroy(native_err);
                 _Exit(77);
             }
-            sem_t native_argument_2 = {0};
-            int   native_result     = p101_sem_wait(native_env, native_err, &native_argument_2);
+            char   native_argument_2_name[96];
+            sem_t *native_argument_2;
+            (void)snprintf(native_argument_2_name, sizeof(native_argument_2_name), "/p101-wrapper-sem-%ld", (long)getpid());
+            native_argument_2 = sem_open(native_argument_2_name, O_CREAT | O_EXCL, 0600, 1U);
+            if(native_argument_2 == SEM_FAILED)
+            {
+                _Exit(77);
+            }
+            int native_result = p101_sem_wait(native_env, native_err, native_argument_2);
             (void)native_result;
+            (void)sem_close(native_argument_2);
+            (void)sem_unlink(native_argument_2_name);
             p101_env_destroy(native_env);
             p101_error_destroy(native_err);
             _Exit(EXIT_SUCCESS);
