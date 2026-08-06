@@ -19,10 +19,12 @@ set(BSD_STANDARD_FLAGS -D_BSD_SOURCE -D__BSD_VISIBLE)
 
 set(LIBRARY_TARGETS p101_sync)
 set(p101_sync_SOURCES
-        src/sync.c
+        src/pthread.c
+        src/semaphore.c
 )
 set(p101_sync_HEADERS
-        include/p101_sync/sync.h
+        include/p101_sync/p101_pthread.h
+        include/p101_sync/p101_semaphore.h
 )
 set(p101_sync_LINK_LIBRARIES
         p101_error
