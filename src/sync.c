@@ -48,12 +48,14 @@ static void pthread_metadata(pthread_t thread, char metadata[P101_THREAD_METADAT
 
 static void pthread_track_held(const struct p101_env *env, p101_env_resource_kind event, const char *resource_class, const void *resource, const char *file_name, const char *function_name, int line_number)
 {
-    char   metadata[P101_THREAD_METADATA_SIZE];
-    char   pointer_id[P101_ENV_POINTER_RESOURCE_ID_SIZE];
-    char   resource_id[P101_MUTEX_OWNER_ID_SIZE];
-    size_t offset;
+    char      metadata[P101_THREAD_METADATA_SIZE];
+    char      pointer_id[P101_ENV_POINTER_RESOURCE_ID_SIZE];
+    char      resource_id[P101_MUTEX_OWNER_ID_SIZE];
+    pthread_t thread;
+    size_t    offset;
 
-    pthread_metadata(p101_pthread_self(env), metadata);
+    thread = p101_pthread_self(env);
+    pthread_metadata(thread, metadata);
     p101_env_pointer_resource_id(pointer_id, sizeof(pointer_id), resource);
     offset = 0U;
     while(pointer_id[offset] != '\0')
@@ -72,12 +74,14 @@ static void pthread_track_held(const struct p101_env *env, p101_env_resource_kin
 
 static void pthread_track_pointer_wait(const struct p101_env *env, p101_env_resource_kind event, const char *resource_class, const void *resource, const char *file_name, const char *function_name, int line_number)
 {
-    char   metadata[P101_THREAD_METADATA_SIZE];
-    char   pointer_id[P101_ENV_POINTER_RESOURCE_ID_SIZE];
-    char   resource_id[P101_MUTEX_OWNER_ID_SIZE];
-    size_t offset;
+    char      metadata[P101_THREAD_METADATA_SIZE];
+    char      pointer_id[P101_ENV_POINTER_RESOURCE_ID_SIZE];
+    char      resource_id[P101_MUTEX_OWNER_ID_SIZE];
+    pthread_t thread;
+    size_t    offset;
 
-    pthread_metadata(p101_pthread_self(env), metadata);
+    thread = p101_pthread_self(env);
+    pthread_metadata(thread, metadata);
     p101_env_pointer_resource_id(pointer_id, sizeof(pointer_id), resource);
     offset = 0U;
     while(pointer_id[offset] != '\0')
@@ -694,6 +698,419 @@ int p101_pthread_rwlockattr_init(const struct p101_env *env, struct p101_error *
     else
     {
         P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "pthread-rwlock-attributes", (const void *)attr, 0U, NULL);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+/*
+ * Copyright 2021-2024 D'Arcy Smith.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+enum
+{
+    RESOURCE_ID_SIZE = 64
+};
+
+#include <fcntl.h>
+#include <stdarg.h>
+
+static bool   sem_open_uses_create_args(int oflag);
+static mode_t sem_open_mode_arg(va_list *args);
+
+static bool sem_open_uses_create_args(int oflag)
+{
+    bool uses_arg;
+
+    if((oflag & O_CREAT) == O_CREAT)
+    {
+        uses_arg = true;
+    }
+    else
+    {
+        uses_arg = false;
+    }
+
+    return uses_arg;
+}
+
+static mode_t sem_open_mode_arg(va_list *args)
+{
+    mode_t mode;
+
+#if defined(__APPLE__) || defined(__FreeBSD__)
+    mode = (mode_t)va_arg(*args, int);
+#else
+    mode = va_arg(*args, mode_t);
+#endif
+
+    return mode;
+}
+
+int p101_sem_close(const struct p101_env *env, struct p101_error *err, sem_t *sem)
+{
+    int  ret_val;
+    char resource_id[RESOURCE_ID_SIZE];
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN(env, err, ret_val, -1);
+    p101_env_pointer_resource_id(resource_id, sizeof(resource_id), sem);
+    errno   = 0;
+    ret_val = sem_close(sem);
+
+    if(ret_val == -1)
+    {
+        P101_ERROR_RAISE_ERRNO(err, errno);
+    }
+    else
+    {
+        P101_TRACK_RESOURCE_RELEASE(env, "named-semaphore", resource_id, NULL);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+sem_t *p101_sem_open(const struct p101_env *env, struct p101_error *err, const char *name, int oflag, ...)
+{
+    sem_t  *ret_val;
+    bool    uses_create_arguments;
+    va_list args;
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN(env, err, ret_val, SEM_FAILED);
+    errno = 0;
+
+    uses_create_arguments = sem_open_uses_create_args(oflag);
+    if(uses_create_arguments)
+    {
+        mode_t       mode;
+        unsigned int value;
+
+        va_start(args, oflag);
+        mode  = sem_open_mode_arg(&args);
+        value = va_arg(args, unsigned int);
+        va_end(args);
+
+        ret_val = sem_open(name, oflag, mode, value);
+    }
+    else
+    {
+        ret_val = sem_open(name, oflag);
+    }
+
+    if(ret_val == SEM_FAILED)
+    {
+        P101_ERROR_RAISE_ERRNO(err, errno);
+    }
+    else
+    {
+        P101_TRACK_POINTER_RESOURCE_ACQUIRE(env, "named-semaphore", ret_val, 0U, name);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+int p101_sem_post(const struct p101_env *env, struct p101_error *err, sem_t *sem)
+{
+    int ret_val;
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN(env, err, ret_val, -1);
+    errno   = 0;
+    ret_val = sem_post(sem);
+
+    if(ret_val == -1)
+    {
+        P101_ERROR_RAISE_ERRNO(err, errno);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+int p101_sem_trywait(const struct p101_env *env, struct p101_error *err, sem_t *sem)
+{
+    int ret_val;
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN(env, err, ret_val, -1);
+    errno   = 0;
+    ret_val = sem_trywait(sem);
+
+    if(ret_val == -1 && errno != EAGAIN)
+    {
+        P101_ERROR_RAISE_ERRNO(err, errno);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+int p101_sem_unlink(const struct p101_env *env, struct p101_error *err, const char *name)
+{
+    int ret_val;
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN(env, err, ret_val, -1);
+    errno   = 0;
+    ret_val = sem_unlink(name);
+
+    if(ret_val == -1)
+    {
+        P101_ERROR_RAISE_ERRNO(err, errno);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+int p101_sem_wait(const struct p101_env *env, struct p101_error *err, sem_t *sem)
+{
+    int ret_val;
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN(env, err, ret_val, -1);
+    errno   = 0;
+    ret_val = sem_wait(sem);
+
+    if(ret_val == -1)
+    {
+        P101_ERROR_RAISE_ERRNO(err, errno);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+/*
+ * Copyright 2021-2024 D'Arcy Smith.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+int p101_pthread_condattr_getpshared(const struct p101_env *env, struct p101_error *err, const pthread_condattr_t *restrict attr, int *restrict pshared)
+{
+    int ret_val;
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
+    ret_val = pthread_condattr_getpshared(attr, pshared);
+
+    if(ret_val != 0)
+    {
+        P101_ERROR_RAISE_ERRNO(err, ret_val);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+int p101_pthread_condattr_setpshared(const struct p101_env *env, struct p101_error *err, pthread_condattr_t *attr, int pshared)
+{
+    int ret_val;
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
+    ret_val = pthread_condattr_setpshared(attr, pshared);
+
+    if(ret_val != 0)
+    {
+        P101_ERROR_RAISE_ERRNO(err, ret_val);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+int p101_pthread_mutex_getprioceiling(const struct p101_env *env, struct p101_error *err, const pthread_mutex_t *restrict mutex, int *restrict prioceiling)
+{
+    int ret_val;
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
+    ret_val = pthread_mutex_getprioceiling(mutex, prioceiling);
+
+    if(ret_val != 0)
+    {
+        P101_ERROR_RAISE_ERRNO(err, ret_val);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+int p101_pthread_mutex_setprioceiling(const struct p101_env *env, struct p101_error *err, pthread_mutex_t *restrict mutex, int prioceiling, int *restrict old_ceiling)
+{
+    int ret_val;
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
+    ret_val = pthread_mutex_setprioceiling(mutex, prioceiling, old_ceiling);
+
+    if(ret_val != 0)
+    {
+        P101_ERROR_RAISE_ERRNO(err, ret_val);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+int p101_pthread_mutexattr_getprioceiling(const struct p101_env *env, struct p101_error *err, const pthread_mutexattr_t *restrict attr, int *restrict prioceiling)
+{
+    int ret_val;
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
+    ret_val = pthread_mutexattr_getprioceiling(attr, prioceiling);
+
+    if(ret_val != 0)
+    {
+        P101_ERROR_RAISE_ERRNO(err, ret_val);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+int p101_pthread_mutexattr_getprotocol(const struct p101_env *env, struct p101_error *err, const pthread_mutexattr_t *restrict attr, int *restrict protocol)
+{
+    int ret_val;
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
+    ret_val = pthread_mutexattr_getprotocol(attr, protocol);
+
+    if(ret_val != 0)
+    {
+        P101_ERROR_RAISE_ERRNO(err, ret_val);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+int p101_pthread_mutexattr_getpshared(const struct p101_env *env, struct p101_error *err, const pthread_mutexattr_t *restrict attr, int *restrict pshared)
+{
+    int ret_val;
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
+    ret_val = pthread_mutexattr_getpshared(attr, pshared);
+
+    if(ret_val != 0)
+    {
+        P101_ERROR_RAISE_ERRNO(err, ret_val);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+int p101_pthread_mutexattr_setprioceiling(const struct p101_env *env, struct p101_error *err, pthread_mutexattr_t *attr, int prioceiling)
+{
+    int ret_val;
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
+    ret_val = pthread_mutexattr_setprioceiling(attr, prioceiling);
+
+    if(ret_val != 0)
+    {
+        P101_ERROR_RAISE_ERRNO(err, ret_val);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+int p101_pthread_mutexattr_setprotocol(const struct p101_env *env, struct p101_error *err, pthread_mutexattr_t *attr, int protocol)
+{
+    int ret_val;
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
+    ret_val = pthread_mutexattr_setprotocol(attr, protocol);
+
+    if(ret_val != 0)
+    {
+        P101_ERROR_RAISE_ERRNO(err, ret_val);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+int p101_pthread_mutexattr_setpshared(const struct p101_env *env, struct p101_error *err, pthread_mutexattr_t *attr, int pshared)
+{
+    int ret_val;
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
+    ret_val = pthread_mutexattr_setpshared(attr, pshared);
+
+    if(ret_val != 0)
+    {
+        P101_ERROR_RAISE_ERRNO(err, ret_val);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+int p101_pthread_rwlockattr_getpshared(const struct p101_env *env, struct p101_error *err, const pthread_rwlockattr_t *restrict attr, int *restrict pshared)
+{
+    int ret_val;
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
+    ret_val = pthread_rwlockattr_getpshared(attr, pshared);
+
+    if(ret_val != 0)
+    {
+        P101_ERROR_RAISE_ERRNO(err, ret_val);
+    }
+
+    P101_WRAPPER_DONE(env);
+    return ret_val;
+}
+
+int p101_pthread_rwlockattr_setpshared(const struct p101_env *env, struct p101_error *err, pthread_rwlockattr_t *attr, int pshared)
+{
+    int ret_val;
+
+    P101_TRACE(env);
+    P101_WRAPPER_FAULT_RETURN_CODE(env, err, ret_val);
+    ret_val = pthread_rwlockattr_setpshared(attr, pshared);
+
+    if(ret_val != 0)
+    {
+        P101_ERROR_RAISE_ERRNO(err, ret_val);
     }
 
     P101_WRAPPER_DONE(env);

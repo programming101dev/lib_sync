@@ -19,9 +19,7 @@ set(BSD_STANDARD_FLAGS -D_BSD_SOURCE -D__BSD_VISIBLE)
 
 set(LIBRARY_TARGETS p101_sync)
 set(p101_sync_SOURCES
-        src/posix/pthread.c
-        src/posix/semaphore.c
-        src/posix_optional/pthread.c
+        src/sync.c
 )
 set(p101_sync_HEADERS
         include/p101_sync/sync.h
