@@ -36,7 +36,6 @@
 
 #include <p101_thread/p101_pthread.h>
 #include <p101_thread/p101_signal.h>
-#include <stdio.h>
 
 enum
 {
@@ -54,12 +53,30 @@ static void pthread_track_thread_pointer_resource(const struct p101_env *env, p1
     char      metadata[P101_THREAD_METADATA_SIZE];
     char      pointer_id[P101_ENV_POINTER_RESOURCE_ID_SIZE];
     char      resource_id[P101_MUTEX_OWNER_ID_SIZE];
+    size_t    offset;
     pthread_t thread;
 
     thread = p101_pthread_self(env);
     p101_pthread_resource_metadata(env, thread, metadata, sizeof(metadata));
     p101_env_pointer_resource_id(pointer_id, sizeof(pointer_id), resource);
-    (void)snprintf(resource_id, sizeof(resource_id), "%s@%s", pointer_id, metadata);
+
+    /*
+     * Joined by hand rather than with snprintf: this runs below the wrapper
+     * layer, with no error object to give p101_snprintf. P101_MUTEX_OWNER_ID_SIZE
+     * is both parts plus the separator and the terminator, so the copy fits.
+     */
+    offset = 0U;
+    while(pointer_id[offset] != '\0')
+    {
+        resource_id[offset] = pointer_id[offset];
+        offset++;
+    }
+    resource_id[offset++] = '@';
+    for(size_t index = 0U; metadata[index] != '\0'; index++)
+    {
+        resource_id[offset++] = metadata[index];
+    }
+    resource_id[offset] = '\0';
     p101_env_track_resource(env, event, resource_class, resource_id, NULL, 0U, metadata, file_name, function_name, line_number);
 }
 
