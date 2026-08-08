@@ -71,10 +71,16 @@ static mode_t sem_open_mode_arg(va_list *args)
 
 int p101_sem_close(const struct p101_env *env, struct p101_error *err, sem_t *sem)
 {
-    int ret_val;
+    char resource_id[P101_ENV_POINTER_RESOURCE_ID_SIZE];
+    int  ret_val;
 
     P101_TRACE(env);
     P101_WRAPPER_FAULT_RETURN(env, err, ret_val, -1);
+    /*
+     * sem_close frees the object, so the pointer value is indeterminate by the time
+     * the release record is written. Spell the id while it is still valid.
+     */
+    p101_env_pointer_resource_id(resource_id, sizeof(resource_id), sem);
     errno   = 0;
     ret_val = sem_close(sem);
 
@@ -84,7 +90,7 @@ int p101_sem_close(const struct p101_env *env, struct p101_error *err, sem_t *se
     }
     else
     {
-        P101_TRACK_POINTER_RESOURCE_RELEASE(env, P101_RESOURCE_CLASS_NAMED_SEMAPHORE, sem, NULL);
+        P101_TRACK_RESOURCE_RELEASE(env, P101_RESOURCE_CLASS_NAMED_SEMAPHORE, resource_id, NULL);
     }
 
     P101_WRAPPER_DONE(env);
